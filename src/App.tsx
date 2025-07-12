@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth"; // Adjust the import based on your pr
 import { useEffect } from "react";
 import Browse from "./pages/Browse"; // Import the Browse component
 import HowItWorks from "./pages/HowItWorks";
+import Community from "./pages/Community";
 
 // Simple loader component
 const Loader = () => (
@@ -53,6 +54,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             {/* Protected routes */}
+          
             <Route
               path="/dashboard"
               element={
@@ -89,6 +91,7 @@ const App = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/Community" element={<Community />} />
             {/* Add Browse route */}
             <Route path="/browse" element={<BrowsePage />} />
             {/* Redirect root to login if not authenticated */}
