@@ -21,6 +21,8 @@ import {
   User,
   ArrowUpDown,
 } from "lucide-react";
+import Header from "@/components/header";
+import { useAuth } from "@/hooks/useAuth";
 
 const BrowsePage = () => {
   // State for filtering and sorting
@@ -30,6 +32,8 @@ const BrowsePage = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
   const [showFilters, setShowFilters] = useState(false);
+
+  const { isAuthenticated } = useAuth(); // Assuming you have a useAuth hook
 
   // Sample items data - this would come from your API
   const [allItems, setAllItems] = useState([]);
@@ -129,34 +133,7 @@ const BrowsePage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-xl text-primary">ReWear</span>
-            </div>
-
-            <nav className="hidden md:flex items-center gap-6">
-              <span className="text-primary font-medium">Browse</span>
-              <span className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                How it Works
-              </span>
-              <span className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                Community
-              </span>
-            </nav>
-
-            <div className="flex items-center gap-3">
-              <Button variant="ghost">Login</Button>
-              <Button className="btn-primary">Sign Up</Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <Header isAuthenticated={true} /> {/* Pass actual auth state here */}
       {/* Search and Filter Section */}
       <section className="border-b bg-card/30 py-6">
         <div className="container mx-auto px-4">
@@ -302,7 +279,6 @@ const BrowsePage = () => {
           )}
         </div>
       </section>
-
       {/* Results Section */}
       <section className="py-8">
         <div className="container mx-auto px-4">
