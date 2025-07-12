@@ -122,3 +122,13 @@ export async function addItem(item: {
   if (error) throw error;
   return { id: data.id };
 }
+
+export async function getItemsByUser(userId: string) {
+  const { data, error } = await supabase
+    .from("items")
+    .select("*")
+    .eq("user_id", userId);
+
+  if (error) throw error;
+  return data;
+}

@@ -9,6 +9,8 @@ interface User {
   id: string;
   name: string;
   email: string;
+  created_at?: string; // Optional field for user creation date
+  // You can add more fields as needed, such as profile picture, etc.
   // Add other user fields as needed
 }
 

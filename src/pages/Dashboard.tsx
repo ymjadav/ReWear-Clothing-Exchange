@@ -1,44 +1,84 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Shirt, 
-  Plus, 
-  Star, 
-  Package, 
-  RefreshCw, 
+import {
+  Shirt,
+  Plus,
+  Star,
+  Package,
+  RefreshCw,
   CheckCircle,
   Clock,
   TrendingUp,
   Heart,
-  Settings
+  Settings,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getItemsByUser } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
 
 const Dashboard = () => {
-  const user = {
-    name: "Sarah Johnson",
-    email: "sarah@example.com",
-    points: 245,
-    avatar: "",
-    memberSince: "March 2024",
-    totalSwaps: 18,
-    totalListings: 12
-  };
+  const [userItems, setUserItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const recentListings = [
-    { id: 1, title: "Vintage Denim Jacket", status: "active", views: 23, image: "" },
-    { id: 2, title: "Summer Floral Dress", status: "pending", views: 15, image: "" },
-    { id: 3, title: "Wool Winter Coat", status: "swapped", views: 45, image: "" },
-  ];
+  const { user } = useAuth();
 
   const recentSwaps = [
-    { id: 1, item: "Blue Sweater", partner: "Emily Chen", status: "completed", type: "swap" },
-    { id: 2, item: "Black Boots", partner: "Point Redemption", status: "pending", type: "redeem" },
-    { id: 3, item: "Silk Scarf", partner: "Maria Lopez", status: "in-progress", type: "swap" },
+    {
+      id: 1,
+      item: "Blue Sweater",
+      partner: "Emily Chen",
+      status: "completed",
+      type: "swap",
+    },
+    {
+      id: 2,
+      item: "Black Boots",
+      partner: "Point Redemption",
+      status: "pending",
+      type: "redeem",
+    },
+    {
+      id: 3,
+      item: "Silk Scarf",
+      partner: "Maria Lopez",
+      status: "in-progress",
+      type: "swap",
+    },
   ];
+
+  useEffect(() => {
+    if (!user) return;
+    setLoading(true);
+    getItemsByUser(user.id)
+      .then((items) => {
+        setUserItems(items);
+      })
+      .catch((err) => {
+        setError(err.message || "Failed to fetch user items");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [user?.id]);
+
+  if (loading || !user) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <span>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -52,7 +92,7 @@ const Dashboard = () => {
               </div>
               <span className="font-bold text-xl text-primary">ReWear</span>
             </Link>
-            
+
             <div className="flex items-center gap-4">
               <Link to="/add-item">
                 <Button className="btn-accent">
@@ -76,42 +116,56 @@ const Dashboard = () => {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar className="w-16 h-16">
-                    <AvatarImage src={user.avatar} />
+                    <AvatarImage src={"dummy"} />
                     <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                      {user.name.split(' ').map(n => n[0]).join('')}
+                      {user.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h1 className="text-2xl font-bold">{user.name}</h1>
                     <p className="text-muted-foreground">{user.email}</p>
-                    <p className="text-sm text-muted-foreground">Member since {user.memberSince}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Member since{" "}
+                      {user.created_at
+                        ? new Date(user.created_at).toLocaleDateString()
+                        : "N/A"}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   <div className="bg-accent/10 rounded-lg p-3 mb-2">
                     <div className="flex items-center gap-2">
                       <Star className="w-5 h-5 text-accent" />
-                      <span className="text-2xl font-bold text-accent">{user.points}</span>
+                      <span className="text-2xl font-bold text-accent">
+                        {200}
+                      </span>
                     </div>
-                    <p className="text-sm text-muted-foreground">ReWear Points</p>
+                    <p className="text-sm text-muted-foreground">
+                      ReWear Points
+                    </p>
                   </div>
                 </div>
               </div>
-              
+
               {/* Stats */}
               <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t">
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-1">
                     <RefreshCw className="w-4 h-4 text-success" />
-                    <span className="text-2xl font-bold">{user.totalSwaps}</span>
+                    <span className="text-2xl font-bold">{0}</span>
                   </div>
                   <p className="text-sm text-muted-foreground">Total Swaps</p>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-1">
                     <Package className="w-4 h-4 text-primary" />
-                    <span className="text-2xl font-bold">{user.totalListings}</span>
+                    <span className="text-2xl font-bold">
+                      {userItems.length || 0}
+                    </span>
                   </div>
                   <p className="text-sm text-muted-foreground">Items Listed</p>
                 </div>
@@ -145,9 +199,9 @@ const Dashboard = () => {
                 </Button>
               </Link>
             </div>
-            
+
             <div className="grid gap-4">
-              {recentListings.map((item) => (
+              {userItems.map((item) => (
                 <Card key={item.id} className="card-hover">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -157,13 +211,20 @@ const Dashboard = () => {
                         </div>
                         <div>
                           <h3 className="font-medium">{item.title}</h3>
-                          <p className="text-sm text-muted-foreground">{item.views} views</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.views} views
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge 
-                          variant={item.status === 'active' ? 'default' : 
-                                  item.status === 'pending' ? 'secondary' : 'outline'}
+                        <Badge
+                          variant={
+                            item.status === "active"
+                              ? "default"
+                              : item.status === "pending"
+                              ? "secondary"
+                              : "outline"
+                          }
                         >
                           {item.status}
                         </Badge>
@@ -179,8 +240,10 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="swaps" className="space-y-4">
-            <h2 className="text-xl font-semibold">Recent Swaps & Redemptions</h2>
-            
+            <h2 className="text-xl font-semibold">
+              Recent Swaps & Redemptions
+            </h2>
+
             <div className="grid gap-4">
               {recentSwaps.map((swap) => (
                 <Card key={swap.id} className="card-hover">
@@ -188,9 +251,9 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center">
-                          {swap.status === 'completed' ? (
+                          {swap.status === "completed" ? (
                             <CheckCircle className="w-6 h-6 text-success" />
-                          ) : swap.status === 'pending' ? (
+                          ) : swap.status === "pending" ? (
                             <Clock className="w-6 h-6 text-warning" />
                           ) : (
                             <RefreshCw className="w-6 h-6 text-primary" />
@@ -199,15 +262,22 @@ const Dashboard = () => {
                         <div>
                           <h3 className="font-medium">{swap.item}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {swap.type === 'swap' ? `Swapped with ${swap.partner}` : swap.partner}
+                            {swap.type === "swap"
+                              ? `Swapped with ${swap.partner}`
+                              : swap.partner}
                           </p>
                         </div>
                       </div>
-                      <Badge 
-                        variant={swap.status === 'completed' ? 'default' : 
-                                swap.status === 'pending' ? 'secondary' : 'outline'}
+                      <Badge
+                        variant={
+                          swap.status === "completed"
+                            ? "default"
+                            : swap.status === "pending"
+                            ? "secondary"
+                            : "outline"
+                        }
                       >
-                        {swap.status.replace('-', ' ')}
+                        {swap.status.replace("-", " ")}
                       </Badge>
                     </div>
                   </CardContent>
@@ -218,11 +288,15 @@ const Dashboard = () => {
 
           <TabsContent value="favorites" className="space-y-4">
             <h2 className="text-xl font-semibold">Saved Items</h2>
-            
+
             <div className="text-center py-12">
               <Heart className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-muted-foreground mb-2">No favorites yet</h3>
-              <p className="text-muted-foreground mb-4">Items you like will appear here</p>
+              <h3 className="text-lg font-medium text-muted-foreground mb-2">
+                No favorites yet
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Items you like will appear here
+              </p>
               <Link to="/">
                 <Button variant="outline">Browse Items</Button>
               </Link>

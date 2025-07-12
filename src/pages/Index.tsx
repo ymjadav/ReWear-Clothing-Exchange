@@ -135,7 +135,7 @@ const Index = () => {
 
                   <Link to="/dashboard">
                     <Button className="btn-primary" variant="ghost">
-                      Profile
+                      Dashboard
                     </Button>
                   </Link>
                 </>

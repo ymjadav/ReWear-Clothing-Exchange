@@ -14,15 +14,34 @@ import NotFound from "./pages/NotFound";
 import { AuthHandler } from "./pages/AuthHaldler";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth"; // Adjust the import based on your project structure
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+
+// Simple loader component
+const Loader = () => (
+  <div
+    style={{
+      display: "flex",
+      height: "100vh",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <span>Loading...</span>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+
   useEffect(() => {
     console.log("Is Authenticated:", isAuthenticated); // Example hook
   }, [isAuthenticated]);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
