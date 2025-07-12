@@ -193,7 +193,15 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                          <Shirt className="w-8 h-8 text-muted-foreground" />
+                          {item.images[0] ? (
+                            <img
+                              src={item.images[0]}
+                              alt={item.title}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            <Shirt className="w-8 h-8 text-muted-foreground" />
+                          )}
                         </div>
                         <div>
                           <h3 className="font-medium">{item.title}</h3>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,6 +37,7 @@ const AddItem = () => {
   const { user } = useAuth(); // Example hook, adjust as needed
   const [newTag, setNewTag] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const navigate = useNavigate(); // Assuming you have a useNavigate hook for navigation
 
   const categories = [
     "Tops",
@@ -120,6 +121,8 @@ const AddItem = () => {
       tags: formData.tags,
       images,
     });
+
+    navigate("/dashboard");
     // Handle form submission
   };
 
