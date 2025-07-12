@@ -18,8 +18,12 @@ import {
   Plus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Header } from "@radix-ui/react-accordion";
+import ReWearHeader from "@/components/header";
 
 const Index = () => {
+  const isAdmin = false; // Example admin check, replace with actual logic
   const featuredItems = [
     {
       id: 1,
@@ -73,78 +77,17 @@ const Index = () => {
     { label: "Items Exchanged", value: "3,892", icon: RefreshCw },
     { label: "CO² Saved", value: "2.1 tons", icon: Leaf },
   ];
-
-  // Use state for authentication
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // true means logged in
+  const { isAuthenticated } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const handleSearch = () => {
+    // Redirect or filter logic here
+    window.location.href = `/browse?search=${encodeURIComponent(searchTerm)}`;
+  };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-xl text-primary">ReWear</span>
-            </div>
-
-            <nav className="hidden md:flex items-center gap-6">
-              <Link
-                to="/"
-                className="text-foreground hover:text-primary transition-colors"
-              >
-                Browse
-              </Link>
-              <Link
-                to="/how-it-works"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                How it Works
-              </Link>
-              <Link
-                to="/community"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                Community
-              </Link>
-            </nav>
-
-            <div className="flex items-center gap-3">
-              {!isAuthenticated ? (
-                <>
-                  <Link to="/login">
-                    <Button className="btn-primary" variant="ghost">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link to="/register">
-                    <Button className="btn-primary">Sign Up</Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Button
-                    className="btn-primary"
-                    variant="ghost"
-                    onClick={() => setIsAuthenticated(false)}
-                  >
-                    Logout
-                  </Button>
-
-                  <Link to="/dashboard">
-                    <Button className="btn-primary" variant="ghost">
-                      Dashboard
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <ReWearHeader isAuthenticated={isAuthenticated} />
       {/* Hero Section */}
       <section className="gradient-hero py-20">
         <div className="container mx-auto px-4 text-center">
@@ -169,6 +112,12 @@ const Index = () => {
                 Browse Items
               </Button>
             </Link>
+            <Link to="/add-item">
+              <Button size="lg" variant="outline" className="px-8">
+                List an Item
+                <Plus className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
           </div>
 
           {/* Search Bar */}
@@ -176,12 +125,15 @@ const Index = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search for clothes, brands, or styles..."
                 className="pl-10 py-3 text-base"
               />
               <Button
                 size="sm"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                onClick={handleSearch}
               >
                 Search
               </Button>
@@ -256,9 +208,13 @@ const Index = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="overflow-x-auto flex gap-6 pb-4">
             {featuredItems.map((item) => (
-              <Link key={item.id} to={`/item/${item.id}`}>
+              <Link
+                key={item.id}
+                to={`/item/${item.id}`}
+                className="min-w-[250px]"
+              >
                 <Card className="card-hover">
                   <CardContent className="p-0">
                     <div className="aspect-square bg-muted rounded-t-lg flex items-center justify-center">

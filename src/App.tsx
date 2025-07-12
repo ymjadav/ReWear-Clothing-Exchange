@@ -11,10 +11,11 @@ import ItemDetail from "./pages/ItemDetail";
 import AddItem from "./pages/AddItem";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
-import { AuthHandler } from "./pages/AuthHaldler";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/hooks/useAuth"; // Adjust the import based on your project structure
 import { useEffect } from "react";
+import Browse from "./pages/Browse"; // Import the Browse component
+import HowItWorks from "./pages/HowItWorks";
 
 // Simple loader component
 const Loader = () => (
@@ -86,6 +87,9 @@ const App = () => {
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/browse" element={<Browse />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            {/* Add Browse route */}
             {/* Redirect root to login if not authenticated */}
             <Route path="/" element={<Index />} />
             {/* Catch-all route */}
