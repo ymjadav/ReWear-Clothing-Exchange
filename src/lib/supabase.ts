@@ -14,6 +14,19 @@ export async function login(email: string, password: string) {
     password,
   });
   if (error) throw error;
+
+  await supabase
+    .from("users")
+    .upsert({
+      id: data.user?.id,
+      name: `${data.user?.user_metadata.first_name || ""} ${
+        data.user?.user_metadata.last_name || ""
+      }`,
+      avatar: data.user?.user_metadata.avatar_url || "",
+      location: data.user?.user_metadata.location || "",
+    })
+    .single();
+
   return { user: data.user, session: data.session };
 }
 
@@ -143,3 +156,86 @@ export async function searchItems(searchTerm: string) {
   if (error) throw error;
   return data;
 }
+
+export async function getItemById(itemId: string) {
+  const { data, error } = await supabase
+    .from("items")
+    .select("*")
+    .eq("id", itemId)
+    .single();
+
+  if (error) throw error;
+  if (!data) throw new Error("Item not found");
+
+  const uploaderUser = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", data.user_id)
+    .single();
+  console.log("Uploader user data:", uploaderUser);
+  if (uploaderUser.error) throw uploaderUser.error;
+  return {
+    ...data,
+    uploader: uploaderUser.data,
+  };
+}
+export async function updateItem(
+  itemId: string,
+  updates: Partial<{
+    title: string;
+    description: string;
+    category: string;
+    size: string;
+    condition: string;
+    brand?: string;
+    color?: string;
+    tags?: string[];
+    images?: string[];
+  }>
+) {
+  const { data, error } = await supabase
+    .from("items")
+    .update(updates)
+    .eq("id", itemId)
+    .select("*")
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteItem(itemId: string) {
+  const { error } = await supabase.from("items").delete().eq("id", itemId);
+  if (error) throw error;
+  return true;
+}
+
+export const createSwapRequest = async (
+  itemId: string,
+  requestedItemId: string,
+  requesterId: string
+) => {
+  const { data, error } = await supabase
+    .from("swap_requests")
+    .insert([
+      {
+        item_id: itemId,
+        requested_item_id: requestedItemId,
+        requester_id: requesterId,
+      },
+    ])
+    .select("*")
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+export const getSwapRequestsByItem = async (itemId: string) => {
+  const { data, error } = await supabase
+    .from("swap_requests")
+    .select("*")
+    .eq("item_id", itemId);
+
+  if (error) throw error;
+  return data;
+};

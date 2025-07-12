@@ -135,20 +135,6 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </div>
-
-                <div className="text-right">
-                  <div className="bg-accent/10 rounded-lg p-3 mb-2">
-                    <div className="flex items-center gap-2">
-                      <Star className="w-5 h-5 text-accent" />
-                      <span className="text-2xl font-bold text-accent">
-                        {200}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      ReWear Points
-                    </p>
-                  </div>
-                </div>
               </div>
 
               {/* Stats */}

@@ -5,16 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 
 import { Leaf } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "@/lib/supabase";
 
 const Header: React.FC<{ isAuthenticated: boolean }> = ({
   isAuthenticated,
 }) => {
+  const navigate = useNavigate(); // <-- Initialize navigate
+
   const isAdmin = false; // Example admin check, replace with actual logic
-  const handleOnLogout = () => {
+  const handleOnLogout = async () => {
     console.log("User logged out");
-    logout();
+    await logout();
+    navigate("/login"); // Redirect to login page after logout
   };
   return (
     <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">

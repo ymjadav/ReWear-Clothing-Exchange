@@ -31,7 +31,6 @@ const Index = () => {
       user: "Sarah J.",
       category: "Outerwear",
       condition: "Excellent",
-      points: 45,
       image: "",
     },
     {
@@ -40,7 +39,6 @@ const Index = () => {
       user: "Emma W.",
       category: "Dresses",
       condition: "Like New",
-      points: 38,
       image: "",
     },
     {
@@ -49,7 +47,6 @@ const Index = () => {
       user: "Mike D.",
       category: "Shoes",
       condition: "Very Good",
-      points: 52,
       image: "",
     },
     {
@@ -58,7 +55,6 @@ const Index = () => {
       user: "Lisa C.",
       category: "Outerwear",
       condition: "Good",
-      points: 42,
       image: "",
     },
   ];
@@ -101,21 +97,9 @@ const Index = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link to="/register">
-              <Button size="lg" className="btn-primary px-8">
-                Start Swapping
-                <ChevronRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
             <Link to="/browse">
               <Button size="lg" variant="outline" className="px-8">
                 Browse Items
-              </Button>
-            </Link>
-            <Link to="/add-item">
-              <Button size="lg" variant="outline" className="px-8">
-                List an Item
-                <Plus className="w-5 h-5 ml-2" />
               </Button>
             </Link>
           </div>
@@ -221,12 +205,6 @@ const Index = () => {
                       <Shirt className="w-16 h-16 text-muted-foreground" />
                     </div>
                     <div className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-medium text-sm">{item.title}</h3>
-                        <Badge variant="secondary" className="text-xs">
-                          {item.points} pts
-                        </Badge>
-                      </div>
                       <p className="text-xs text-muted-foreground mb-2">
                         by {item.user} • {item.category}
                       </p>
@@ -269,7 +247,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">2. Swap or Redeem</h3>
               <p className="text-muted-foreground">
-                Exchange directly with others or use points to redeem items
+                Exchange directly with others
               </p>
             </div>
 
@@ -279,7 +257,7 @@ const Index = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">3. Make Impact</h3>
               <p className="text-muted-foreground">
-                Reduce waste and discover unique pieces while earning points
+                Reduce waste and discover unique pieces
               </p>
             </div>
           </div>

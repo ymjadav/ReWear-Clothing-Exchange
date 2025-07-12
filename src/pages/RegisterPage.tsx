@@ -209,10 +209,6 @@ const RegisterPage = () => {
           <div className="space-y-1 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-3 h-3 text-success" />
-              <span>Earn points by sharing clothes</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-3 h-3 text-success" />
               <span>Find unique sustainable fashion</span>
             </div>
             <div className="flex items-center gap-2">
