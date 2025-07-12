@@ -16,7 +16,7 @@ import {
   Calendar,
   User,
 } from "lucide-react";
-import { getItemById, getItemsByUser } from "@/lib/supabase";
+import { createSwapRequest, getItemById, getItemsByUser } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"; // If you have a dialog/modal component
 import { get } from "http";
 import { useAuth } from "@/hooks/useAuth";
@@ -76,12 +76,25 @@ const ItemDetail = () => {
     fetchUserItems();
   };
 
-  const submitSwapRequest = () => {
-    // Send itemDetails.id and requestedItemId to your backend
+  const submitSwapRequest = async () => {
+    if (!requestedItemId || !itemDetails?.id) {
+      setError("Please select an item to swap.");
+      return;
+    }
+    if (!user) {
+      setError("You must be logged in to request a swap.");
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    await createSwapRequest(itemDetails.id, requestedItemId, user.id);
     console.log("Request swap:", {
       requestedItemId,
       targetItemId: itemDetails?.id,
+      requesterId: user.id,
     });
+    setIsLoading(false);
+    setRequestedItemId(null);
     setShowSwapModal(false);
   };
 

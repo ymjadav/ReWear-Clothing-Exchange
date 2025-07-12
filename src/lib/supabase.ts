@@ -146,6 +146,17 @@ export async function getItemsByUser(userId: string) {
   return data;
 }
 
+export async function getOtherUsersItems(userId: string) {
+  const { data, error } = await supabase
+    .from("items")
+    .select("*")
+    .not("user_id", "eq", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
 export async function searchItems(searchTerm: string) {
   // Searches only the title for the searchTerm (case-insensitive)
   const { data, error } = await supabase
@@ -179,6 +190,7 @@ export async function getItemById(itemId: string) {
     uploader: uploaderUser.data,
   };
 }
+
 export async function updateItem(
   itemId: string,
   updates: Partial<{

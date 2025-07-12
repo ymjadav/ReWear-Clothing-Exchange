@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { getOtherUsersItems, supabase } from "../lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +34,7 @@ const BrowsePage = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate(); // Initialize navigate from react-router-dom
-  const { isAuthenticated } = useAuth(); // Assuming you have a useAuth hook
+  const { isAuthenticated, user } = useAuth(); // Assuming you have a useAuth hook
 
   // Sample items data - this would come from your API
   const [allItems, setAllItems] = useState([]);
@@ -42,22 +42,19 @@ const BrowsePage = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      const { data, error } = await supabase
-        .from("items")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching items:", error);
-      } else {
+      try {
+        setLoading(true);
+        const data = await getOtherUsersItems(user?.id || "");
         setAllItems(data);
+      } catch (error) {
+        console.error("Error fetching items:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     fetchItems();
-  }, []);
+  }, [user]);
 
   const categories = [
     "All",
