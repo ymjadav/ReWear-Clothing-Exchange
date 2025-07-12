@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import BrowsePage from "./pages/BrowseItems";
 import Dashboard from "./pages/Dashboard";
 import ItemDetail from "./pages/ItemDetail";
 import AddItem from "./pages/AddItem";
@@ -86,6 +87,7 @@ const App = () => {
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/browse" element={<BrowsePage   />} />
             {/* Redirect root to login if not authenticated */}
             <Route path="/" element={<Index />} />
             {/* Catch-all route */}
