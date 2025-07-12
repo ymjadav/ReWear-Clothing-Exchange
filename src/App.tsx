@@ -12,59 +12,70 @@ import AddItem from "./pages/AddItem";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 import { AuthHandler } from "./pages/AuthHaldler";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/hooks/useAuth"; // Adjust the import based on your project structure
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          {/* Protected routes */}
-          <Route path="/" element={<Index />} />
-          <Route
-            path="/dashboard"
-            element={
-              <AuthHandler>
-                <Dashboard />
-              </AuthHandler>
-            }
-          />
-          <Route
-            path="/item/:id"
-            element={
-              <AuthHandler>
-                <ItemDetail />
-              </AuthHandler>
-            }
-          />
-          <Route
-            path="/add-item"
-            element={
-              <AuthHandler>
-                <AddItem />
-              </AuthHandler>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <AuthHandler>
-                <AdminPanel />
-              </AuthHandler>
-            }
-          />
-          {/* Catch-all route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const { isAuthenticated } = useAuth();
+  useEffect(() => {
+    console.log("Is Authenticated:", isAuthenticated); // Example hook
+  }, [isAuthenticated]);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Protected routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/item/:id"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <ItemDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-item"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <AddItem />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                  <AdminPanel />
+                </ProtectedRoute>
+              }
+            />
+            {/* Public routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            {/* Redirect root to login if not authenticated */}
+            <Route path="/" element={<Index />} />
+            {/* Catch-all route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

@@ -1,12 +1,13 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
-  Leaf, 
-  RefreshCw, 
-  Heart, 
-  Star, 
+import {
+  Leaf,
+  RefreshCw,
+  Heart,
+  Star,
   Search,
   Shirt,
   Package,
@@ -14,7 +15,7 @@ import {
   Users,
   Recycle,
   ChevronRight,
-  Plus
+  Plus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -27,7 +28,7 @@ const Index = () => {
       category: "Outerwear",
       condition: "Excellent",
       points: 45,
-      image: ""
+      image: "",
     },
     {
       id: 2,
@@ -36,7 +37,7 @@ const Index = () => {
       category: "Dresses",
       condition: "Like New",
       points: 38,
-      image: ""
+      image: "",
     },
     {
       id: 3,
@@ -45,7 +46,7 @@ const Index = () => {
       category: "Shoes",
       condition: "Very Good",
       points: 52,
-      image: ""
+      image: "",
     },
     {
       id: 4,
@@ -54,8 +55,8 @@ const Index = () => {
       category: "Outerwear",
       condition: "Good",
       points: 42,
-      image: ""
-    }
+      image: "",
+    },
   ];
 
   const categories = [
@@ -64,14 +65,17 @@ const Index = () => {
     { name: "Dresses", icon: Heart, count: 156 },
     { name: "Outerwear", icon: Shirt, count: 98 },
     { name: "Shoes", icon: Package, count: 134 },
-    { name: "Accessories", icon: Star, count: 67 }
+    { name: "Accessories", icon: Star, count: 67 },
   ];
 
   const stats = [
     { label: "Active Users", value: "1,245", icon: Users },
     { label: "Items Exchanged", value: "3,892", icon: RefreshCw },
-    { label: "CO² Saved", value: "2.1 tons", icon: Leaf }
+    { label: "CO² Saved", value: "2.1 tons", icon: Leaf },
   ];
+
+  // Use state for authentication
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // true means logged in
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,26 +89,57 @@ const Index = () => {
               </div>
               <span className="font-bold text-xl text-primary">ReWear</span>
             </div>
-            
+
             <nav className="hidden md:flex items-center gap-6">
-              <Link to="/" className="text-foreground hover:text-primary transition-colors">
+              <Link
+                to="/"
+                className="text-foreground hover:text-primary transition-colors"
+              >
                 Browse
               </Link>
-              <Link to="/how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/how-it-works"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 How it Works
               </Link>
-              <Link to="/community" className="text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/community"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 Community
               </Link>
             </nav>
-            
+
             <div className="flex items-center gap-3">
-              <Link to="/login">
-                <Button variant="ghost">Login</Button>
-              </Link>
-              <Link to="/register">
-                <Button className="btn-primary">Sign Up</Button>
-              </Link>
+              {!isAuthenticated ? (
+                <>
+                  <Link to="/login">
+                    <Button className="btn-primary" variant="ghost">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button className="btn-primary">Sign Up</Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Button
+                    className="btn-primary"
+                    variant="ghost"
+                    onClick={() => setIsAuthenticated(false)}
+                  >
+                    Logout
+                  </Button>
+
+                  <Link to="/dashboard">
+                    <Button className="btn-primary" variant="ghost">
+                      Profile
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -118,10 +153,10 @@ const Index = () => {
             <span className="block text-primary">Made Simple</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join the ReWear community to swap, share, and discover amazing clothing pieces 
-            while reducing fashion waste together.
+            Join the ReWear community to swap, share, and discover amazing
+            clothing pieces while reducing fashion waste together.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link to="/register">
               <Button size="lg" className="btn-primary px-8">
@@ -140,11 +175,14 @@ const Index = () => {
           <div className="max-w-md mx-auto">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input 
+              <Input
                 placeholder="Search for clothes, brands, or styles..."
                 className="pl-10 py-3 text-base"
               />
-              <Button size="sm" className="absolute right-2 top-1/2 transform -translate-y-1/2">
+              <Button
+                size="sm"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+              >
                 Search
               </Button>
             </div>
@@ -161,7 +199,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <stat.icon className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-3xl font-bold text-primary mb-2">{stat.value}</h3>
+                <h3 className="text-3xl font-bold text-primary mb-2">
+                  {stat.value}
+                </h3>
                 <p className="text-muted-foreground">{stat.label}</p>
               </div>
             ))}
@@ -175,10 +215,11 @@ const Index = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Shop by Category</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Discover amazing clothing pieces across all categories, from everyday basics to special occasion wear.
+              Discover amazing clothing pieces across all categories, from
+              everyday basics to special occasion wear.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {categories.map((category) => (
               <Card key={category.name} className="card-hover cursor-pointer">
@@ -187,7 +228,9 @@ const Index = () => {
                     <category.icon className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="font-medium mb-1">{category.name}</h3>
-                  <p className="text-sm text-muted-foreground">{category.count} items</p>
+                  <p className="text-sm text-muted-foreground">
+                    {category.count} items
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -212,7 +255,7 @@ const Index = () => {
               </Button>
             </Link>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredItems.map((item) => (
               <Link key={item.id} to={`/item/${item.id}`}>
@@ -252,7 +295,7 @@ const Index = () => {
               Simple steps to start your sustainable fashion journey
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -263,7 +306,7 @@ const Index = () => {
                 Upload photos and details of clothes you no longer wear
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <RefreshCw className="w-8 h-8 text-primary" />
@@ -273,7 +316,7 @@ const Index = () => {
                 Exchange directly with others or use points to redeem items
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Recycle className="w-8 h-8 text-success" />
@@ -290,9 +333,12 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-16 gradient-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Join the Movement?</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            Ready to Join the Movement?
+          </h2>
           <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            Start your sustainable fashion journey today and be part of a community that cares about the planet.
+            Start your sustainable fashion journey today and be part of a
+            community that cares about the planet.
           </p>
           <Link to="/register">
             <Button size="lg" variant="secondary" className="px-8">
@@ -315,40 +361,107 @@ const Index = () => {
                 <span className="font-bold text-lg text-primary">ReWear</span>
               </div>
               <p className="text-muted-foreground text-sm">
-                Making sustainable fashion accessible to everyone through community-driven clothing exchange.
+                Making sustainable fashion accessible to everyone through
+                community-driven clothing exchange.
               </p>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-3">Platform</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/browse" className="hover:text-primary transition-colors">Browse Items</Link></li>
-                <li><Link to="/how-it-works" className="hover:text-primary transition-colors">How it Works</Link></li>
-                <li><Link to="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
+                <li>
+                  <Link
+                    to="/browse"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Browse Items
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/how-it-works"
+                    className="hover:text-primary transition-colors"
+                  >
+                    How it Works
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/pricing"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Pricing
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-3">Community</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/blog" className="hover:text-primary transition-colors">Blog</Link></li>
-                <li><Link to="/stories" className="hover:text-primary transition-colors">Success Stories</Link></li>
-                <li><Link to="/events" className="hover:text-primary transition-colors">Events</Link></li>
+                <li>
+                  <Link
+                    to="/blog"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/stories"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Success Stories
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/events"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Events
+                  </Link>
+                </li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-3">Support</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/help" className="hover:text-primary transition-colors">Help Center</Link></li>
-                <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
-                <li><Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                <li>
+                  <Link
+                    to="/help"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/contact"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/privacy"
+                    className="hover:text-primary transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 ReWear. All rights reserved. Built with sustainability in mind.</p>
+            <p>
+              &copy; 2024 ReWear. All rights reserved. Built with sustainability
+              in mind.
+            </p>
           </div>
         </div>
       </footer>

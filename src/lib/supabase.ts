@@ -23,6 +23,12 @@ export async function logout() {
   return true;
 }
 
+export async function getUser() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) throw error;
+  return data.user;
+}
+
 export async function registerUser({
   email,
   password,
@@ -59,4 +65,60 @@ export async function registerUser({
   });
   if (error) throw error;
   return { user: data.user, session: data.session };
+}
+
+export async function uploadImage(
+  file: File,
+  bucket: string = "rewear-images",
+  path?: string
+): Promise<string> {
+  if (!file) throw new Error("No file provided.");
+
+  const filePath = path || `${Date.now()}_${file.name}`;
+  const { data, error } = await supabase.storage
+    .from(bucket)
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (error) throw error;
+
+  // Get public URL
+  const { data: urlData } = supabase.storage
+    .from(bucket)
+    .getPublicUrl(filePath);
+  if (!urlData?.publicUrl) throw new Error("Could not get public URL.");
+
+  return urlData.publicUrl;
+}
+
+export async function deleteImage(
+  filePath: string,
+  bucket: string = "rewear-images"
+): Promise<void> {
+  const { error } = await supabase.storage.from(bucket).remove([filePath]);
+  if (error) throw error;
+}
+
+export async function addItem(item: {
+  user_id: string;
+  title: string;
+  description: string;
+  category: string;
+  size: string;
+  condition: string;
+  brand?: string;
+  color?: string;
+  tags?: string[];
+  images?: string[];
+}): Promise<{ id: string }> {
+  const { data, error } = await supabase
+    .from("items")
+    .insert([item])
+    .select("id")
+    .single();
+
+  if (error) throw error;
+  return { id: data.id };
 }

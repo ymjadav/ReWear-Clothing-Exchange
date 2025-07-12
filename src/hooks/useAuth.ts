@@ -1,4 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
+import {
+  getUser,
+  login as supabaseLogin,
+  logout as supabaseLogout,
+} from "@/lib/supabase"; // Adjust the import based on your project structure
 
 interface User {
   id: string;
@@ -8,6 +13,7 @@ interface User {
 }
 
 interface UseAuthReturn {
+  isAuthenticated: boolean;
   user: User | null;
   loading: boolean;
   error: string | null;
@@ -19,12 +25,32 @@ export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
-    // Example: Load user from localStorage/sessionStorage
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // Load user from localStorage/sessionStorage
+    checkAuthStatus();
+  }, []);
+
+  useEffect(() => {
+    setIsAuthenticated(!!user);
+  }, [user]);
+
+  const checkAuthStatus = useCallback(async () => {
+    setLoading(true);
+    try {
+      const fetchedUser = await getUser();
+      if (fetchedUser) {
+        setUser({
+          id: fetchedUser.id,
+          name: fetchedUser.user_metadata?.name || "",
+          email: fetchedUser.email || "",
+        });
+      }
+    } catch (err) {
+      setError(err.message || "Failed to fetch user");
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -32,35 +58,35 @@ export function useAuth(): UseAuthReturn {
     setLoading(true);
     setError(null);
     try {
-      // Replace with your actual authentication logic/API call
-      // Example mock:
-      if (email === "test@example.com" && password === "password") {
-        const loggedInUser: User = {
-          id: "1",
-          name: "Test User",
-          email,
+      const { user, session } = await supabaseLogin(email, password);
+
+      if (user) {
+        const userObj: User = {
+          id: user.id,
+          name: user.user_metadata?.name || "",
+          email: user.email || "",
         };
-        setUser(loggedInUser);
-        localStorage.setItem("user", JSON.stringify(loggedInUser));
-      } else {
-        throw new Error("Invalid credentials");
+        setUser(userObj);
+        localStorage.setItem("user", JSON.stringify(userObj));
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message);
+        setError(err.message || "Login failed");
       } else {
-        setError("An unknown error occurred");
+        setError("Login failed");
       }
-      setUser(null);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    await supabaseLogout();
     setUser(null);
     localStorage.removeItem("user");
   }, []);
 
-  return { user, loading, error, login, logout };
+  return { user, loading, error, login, logout, isAuthenticated };
 }

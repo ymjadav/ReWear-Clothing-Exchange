@@ -3,18 +3,25 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowLeft, 
-  Upload, 
-  X, 
-  Shirt,
-  Plus,
-  Tag
-} from "lucide-react";
+import { ArrowLeft, Upload, X, Shirt, Plus, Tag } from "lucide-react";
+import { addItem, deleteImage, uploadImage } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
 
 const AddItem = () => {
   const [formData, setFormData] = useState({
@@ -25,56 +32,94 @@ const AddItem = () => {
     condition: "",
     brand: "",
     color: "",
-    tags: [] as string[]
+    tags: [] as string[],
   });
-
+  const { user } = useAuth(); // Example hook, adjust as needed
   const [newTag, setNewTag] = useState("");
-  const [images, setImages] = useState<File[]>([]);
+  const [images, setImages] = useState<string[]>([]);
 
   const categories = [
-    "Tops", "Bottoms", "Dresses", "Outerwear", "Shoes", 
-    "Accessories", "Activewear", "Formal", "Vintage"
+    "Tops",
+    "Bottoms",
+    "Dresses",
+    "Outerwear",
+    "Shoes",
+    "Accessories",
+    "Activewear",
+    "Formal",
+    "Vintage",
   ];
 
   const sizes = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "One Size"];
-  
-  const conditions = [
-    "Like New", "Excellent", "Very Good", "Good", "Fair"
-  ];
+
+  const conditions = ["Like New", "Excellent", "Very Good", "Good", "Fair"];
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setImages(prev => [...prev, ...files].slice(0, 5)); // Max 5 images
+    if (files.length + images.length > 5) {
+      alert("You can only upload a maximum of 5 images.");
+      return;
+    }
+    const imageUrls: string[] = [];
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        // 5MB limit
+        alert("Each image must be less than 5MB.");
+        return;
+      }
+      const url = await uploadImage(file);
+      imageUrls.push(url);
+    }
+    setImages((prev) => [...prev, ...imageUrls]); // Max 5 images
   };
 
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+  const removeImage = async (index: number) => {
+    const imageUrl = images[index];
+    if (imageUrl) {
+      await deleteImage(imageUrl);
+    }
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const addTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        tags: [...prev.tags, newTag.trim()]
+        tags: [...prev.tags, newTag.trim()],
       }));
       setNewTag("");
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:", { ...formData, images });
+    console.log("User ID:", user?.id); // Ensure user is authenticated
+    console.log("Images:", images);
+    console.log("Form Data:", formData);
+    addItem({
+      user_id: user?.id, // Ensure user is authenticated
+      title: formData.title,
+      description: formData.description,
+      category: formData.category,
+      size: formData.size,
+      condition: formData.condition,
+      brand: formData.brand,
+      color: formData.color,
+      tags: formData.tags,
+      images,
+    });
     // Handle form submission
   };
 
@@ -118,9 +163,12 @@ const AddItem = () => {
             <CardContent>
               <div className="grid grid-cols-5 gap-4">
                 {images.map((image, index) => (
-                  <div key={index} className="relative aspect-square bg-muted rounded-lg flex items-center justify-center">
-                    <img 
-                      src={URL.createObjectURL(image)} 
+                  <div
+                    key={index}
+                    className="relative aspect-square bg-muted rounded-lg flex items-center justify-center"
+                  >
+                    <img
+                      src={image}
                       alt={`Upload ${index + 1}`}
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -135,11 +183,13 @@ const AddItem = () => {
                     </Button>
                   </div>
                 ))}
-                
+
                 {images.length < 5 && (
                   <label className="aspect-square border-2 border-dashed border-muted-foreground/25 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
                     <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-                    <span className="text-xs text-muted-foreground">Add Photo</span>
+                    <span className="text-xs text-muted-foreground">
+                      Add Photo
+                    </span>
                     <input
                       type="file"
                       accept="image/*"
@@ -177,7 +227,9 @@ const AddItem = () => {
                   placeholder="Describe the item's condition, style, and any special features..."
                   rows={4}
                   value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                   required
                 />
               </div>
@@ -185,13 +237,21 @@ const AddItem = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Category *</Label>
-                  <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) =>
+                      handleInputChange("category", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((category) => (
-                        <SelectItem key={category} value={category.toLowerCase()}>
+                        <SelectItem
+                          key={category}
+                          value={category.toLowerCase()}
+                        >
                           {category}
                         </SelectItem>
                       ))}
@@ -201,7 +261,10 @@ const AddItem = () => {
 
                 <div className="space-y-2">
                   <Label>Size *</Label>
-                  <Select value={formData.size} onValueChange={(value) => handleInputChange("size", value)}>
+                  <Select
+                    value={formData.size}
+                    onValueChange={(value) => handleInputChange("size", value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select size" />
                     </SelectTrigger>
@@ -240,13 +303,21 @@ const AddItem = () => {
 
               <div className="space-y-2">
                 <Label>Condition *</Label>
-                <Select value={formData.condition} onValueChange={(value) => handleInputChange("condition", value)}>
+                <Select
+                  value={formData.condition}
+                  onValueChange={(value) =>
+                    handleInputChange("condition", value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select condition" />
                   </SelectTrigger>
                   <SelectContent>
                     {conditions.map((condition) => (
-                      <SelectItem key={condition} value={condition.toLowerCase()}>
+                      <SelectItem
+                        key={condition}
+                        value={condition.toLowerCase()}
+                      >
                         {condition}
                       </SelectItem>
                     ))}
@@ -271,13 +342,15 @@ const AddItem = () => {
                     placeholder="Add a tag..."
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addTag())
+                    }
                   />
                   <Button type="button" onClick={addTag} variant="outline">
                     <Plus className="w-4 h-4" />
                   </Button>
                 </div>
-                
+
                 {formData.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {formData.tags.map((tag) => (

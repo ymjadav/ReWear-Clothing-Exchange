@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // <-- Add useNavigate
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,19 +24,24 @@ const RegisterPage = () => {
     lastName: "",
     agreeToTerms: false,
   });
+  const navigate = useNavigate(); // <-- Initialize navigate
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle registration logic here
-    registerUser({
-      email: formData.email,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      agreeToTerms: formData.agreeToTerms,
-    });
-    console.log("Registration attempt:", formData);
+    try {
+      await registerUser({
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        agreeToTerms: formData.agreeToTerms,
+      });
+      console.log("Registration attempt:", formData);
+      navigate("/login"); // <-- Redirect to login page
+    } catch (error) {
+      console.error("Registration error:", error);
+    }
   };
 
   const updateField = (field: string, value: string | boolean) => {
