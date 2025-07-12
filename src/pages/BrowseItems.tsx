@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/header";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router";
 
 const BrowsePage = () => {
   // State for filtering and sorting
@@ -32,7 +33,7 @@ const BrowsePage = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid");
   const [showFilters, setShowFilters] = useState(false);
-
+  const navigate = useNavigate(); // Initialize navigate from react-router-dom
   const { isAuthenticated } = useAuth(); // Assuming you have a useAuth hook
 
   // Sample items data - this would come from your API
@@ -119,6 +120,8 @@ const BrowsePage = () => {
   // Handle item click - this would navigate to the item detail page
   const handleItemClick = (itemId) => {
     console.log(`Navigate to /item/${itemId}`);
+    navigate(`/item/${itemId}`); // Use navigate to go to item detail page
+
     // In a real app, you'd use React Router: navigate(`/item/${itemId}`)
   };
 
@@ -133,7 +136,8 @@ const BrowsePage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <Header isAuthenticated={true} /> {/* Pass actual auth state here */}
+      <Header isAuthenticated={isAuthenticated} />{" "}
+      {/* Pass actual auth state here */}
       {/* Search and Filter Section */}
       <section className="border-b bg-card/30 py-6">
         <div className="container mx-auto px-4">
