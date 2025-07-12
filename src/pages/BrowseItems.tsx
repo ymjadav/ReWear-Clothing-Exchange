@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
-  Leaf, 
-  Heart, 
-  Star, 
+import {
+  Leaf,
+  Heart,
+  Star,
   Search,
   Shirt,
   Package,
@@ -19,7 +19,7 @@ import {
   MapPin,
   Clock,
   User,
-  ArrowUpDown
+  ArrowUpDown,
 } from "lucide-react";
 
 const BrowsePage = () => {
@@ -33,34 +33,44 @@ const BrowsePage = () => {
 
   // Sample items data - this would come from your API
   const [allItems, setAllItems] = useState([]);
-const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  const fetchItems = async () => {
-    const { data, error } = await supabase
-      .from("items")
-      .select("*")
-      .order("created_at", { ascending: false });
+  useEffect(() => {
+    const fetchItems = async () => {
+      const { data, error } = await supabase
+        .from("items")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error("Error fetching items:", error);
-    } else {
-      setAllItems(data);
-    }
+      if (error) {
+        console.error("Error fetching items:", error);
+      } else {
+        setAllItems(data);
+      }
 
-    setLoading(false);
-  };
+      setLoading(false);
+    };
 
-  fetchItems();
-}, []);
-
+    fetchItems();
+  }, []);
 
   const categories = [
-    "All", "Tops", "Bottoms", "Dresses", "Outerwear", "Shoes", "Accessories"
+    "All",
+    "Tops",
+    "Bottoms",
+    "Dresses",
+    "Outerwear",
+    "Shoes",
+    "Accessories",
   ];
 
   const conditions = [
-    "All", "Like New", "Excellent", "Very Good", "Good", "Fair"
+    "All",
+    "Like New",
+    "Excellent",
+    "Very Good",
+    "Good",
+    "Fair",
   ];
 
   const sortOptions = [
@@ -68,17 +78,20 @@ useEffect(() => {
     { value: "oldest", label: "Oldest First" },
     { value: "points-high", label: "Points: High to Low" },
     { value: "points-low", label: "Points: Low to High" },
-    { value: "alphabetical", label: "Alphabetical" }
+    { value: "alphabetical", label: "Alphabetical" },
   ];
 
   // Filter and sort items based on current state
-  const filteredItems = allItems.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.user.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
-    const matchesCondition = selectedCondition === "All" || item.condition === selectedCondition;
-    
+  const filteredItems = allItems.filter((item) => {
+    const matchesSearch =
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.user.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" || item.category === selectedCategory;
+    const matchesCondition =
+      selectedCondition === "All" || item.condition === selectedCondition;
+
     return matchesSearch && matchesCategory && matchesCondition;
   });
 
@@ -125,7 +138,7 @@ useEffect(() => {
               </div>
               <span className="font-bold text-xl text-primary">ReWear</span>
             </div>
-            
+
             <nav className="hidden md:flex items-center gap-6">
               <span className="text-primary font-medium">Browse</span>
               <span className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
@@ -135,7 +148,7 @@ useEffect(() => {
                 Community
               </span>
             </nav>
-            
+
             <div className="flex items-center gap-3">
               <Button variant="ghost">Login</Button>
               <Button className="btn-primary">Sign Up</Button>
@@ -151,7 +164,7 @@ useEffect(() => {
           <div className="max-w-2xl mx-auto mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input 
+              <Input
                 placeholder="Search for clothes, brands, or users..."
                 className="pl-10 pr-4 py-3 text-base"
                 value={searchTerm}
@@ -171,7 +184,11 @@ useEffect(() => {
               >
                 <Filter className="w-4 h-4" />
                 Filters
-                <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${
+                    showFilters ? "rotate-180" : ""
+                  }`}
+                />
               </Button>
 
               {/* Quick Category Filters */}
@@ -179,7 +196,9 @@ useEffect(() => {
                 {categories.slice(0, 5).map((category) => (
                   <Button
                     key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
+                    variant={
+                      selectedCategory === category ? "default" : "outline"
+                    }
                     size="sm"
                     onClick={() => setSelectedCategory(category)}
                     className="text-xs"
@@ -194,12 +213,12 @@ useEffect(() => {
               {/* Sort Dropdown */}
               <div className="flex items-center gap-2">
                 <ArrowUpDown className="w-4 h-4 text-muted-foreground" />
-                <select 
-                  value={sortBy} 
+                <select
+                  value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="bg-background border border-border rounded px-3 py-1 text-sm"
                 >
-                  {sortOptions.map(option => (
+                  {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -234,31 +253,39 @@ useEffect(() => {
             <div className="mt-6 p-4 bg-card rounded-lg border">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Category</label>
-                  <select 
-                    value={selectedCategory} 
+                  <label className="text-sm font-medium mb-2 block">
+                    Category
+                  </label>
+                  <select
+                    value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="w-full bg-background border border-border rounded px-3 py-2 text-sm"
                   >
-                    {categories.map(category => (
-                      <option key={category} value={category}>{category}</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Condition</label>
-                  <select 
-                    value={selectedCondition} 
+                  <label className="text-sm font-medium mb-2 block">
+                    Condition
+                  </label>
+                  <select
+                    value={selectedCondition}
                     onChange={(e) => setSelectedCondition(e.target.value)}
                     className="w-full bg-background border border-border rounded px-3 py-2 text-sm"
                   >
-                    {conditions.map(condition => (
-                      <option key={condition} value={condition}>{condition}</option>
+                    {conditions.map((condition) => (
+                      <option key={condition} value={condition}>
+                        {condition}
+                      </option>
                     ))}
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium mb-2 block">Size</label>
                   <select className="w-full bg-background border border-border rounded px-3 py-2 text-sm">
@@ -291,14 +318,16 @@ useEffect(() => {
           </div>
 
           {/* Items Grid/List */}
-          <div className={`grid gap-6 ${
-            viewMode === "grid" 
-              ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-              : "grid-cols-1"
-          }`}>
+          <div
+            className={`grid gap-6 ${
+              viewMode === "grid"
+                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                : "grid-cols-1"
+            }`}
+          >
             {sortedItems.map((item) => (
-              <Card 
-                key={item.id} 
+              <Card
+                key={item.id}
                 className="card-hover cursor-pointer"
                 onClick={() => handleItemClick(item.id)}
               >
@@ -307,27 +336,40 @@ useEffect(() => {
                     // Grid View
                     <>
                       <div className="aspect-square bg-muted rounded-t-lg flex items-center justify-center">
-                        <Shirt className="w-16 h-16 text-muted-foreground" />
+                        {item.images && item.images.length > 0 ? (
+                          <img
+                            src={item.images[0]}
+                            alt={item.title}
+                            className="w-full h-full object-cover rounded-t-lg"
+                          />
+                        ) : (
+                          <Shirt className="w-16 h-16 text-muted-foreground" />
+                        )}
                       </div>
                       <div className="p-4">
                         <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-medium text-sm line-clamp-2">{item.title}</h3>
-                          <Badge variant="secondary" className="text-xs ml-2">
-                            {item.points} pts
-                          </Badge>
+                          <h3 className="font-medium text-sm line-clamp-2">
+                            {item.title}
+                          </h3>
                         </div>
                         <p className="text-xs text-muted-foreground mb-2">
                           {item.brand} • Size {item.size}
                         </p>
                         <div className="flex items-center gap-2 mb-2">
                           <User className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">{item.user}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {item.user}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 mb-3">
                           <MapPin className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">{item.location}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {item.location}
+                          </span>
                           <Clock className="w-3 h-3 text-muted-foreground ml-2" />
-                          <span className="text-xs text-muted-foreground">{item.postedDate}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {item.postedDate}
+                          </span>
                         </div>
                         <div className="flex items-center justify-between">
                           <Badge variant="outline" className="text-xs">
@@ -388,7 +430,7 @@ useEffect(() => {
               <p className="text-muted-foreground mb-4">
                 Try adjusting your search terms or filters
               </p>
-              <Button 
+              <Button
                 onClick={() => {
                   setSearchTerm("");
                   setSelectedCategory("All");
