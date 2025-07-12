@@ -132,3 +132,14 @@ export async function getItemsByUser(userId: string) {
   if (error) throw error;
   return data;
 }
+
+export async function searchItems(searchTerm: string) {
+  // Searches only the title for the searchTerm (case-insensitive)
+  const { data, error } = await supabase
+    .from("items")
+    .select("*")
+    .ilike("title", `%${searchTerm}%`);
+
+  if (error) throw error;
+  return data;
+}
